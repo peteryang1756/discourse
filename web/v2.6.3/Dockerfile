@@ -4,7 +4,7 @@ ARG RENDER_EXTERNAL_HOSTNAME
 ARG CUSTOM_DOMAIN
 ARG DISCOURSE_WORKER_CONCURRENCY
 
-ENV DISCOURSE_HOSTNAME
+ENV DISCOURSE_HOSTNAME=${CUSTOM_DOMAIN:-$RENDER_EXTERNAL_HOSTNAME}
 ENV RAILS_ENV=production
 ENV DISCOURSE_VERSION=v2.6.3
 ENV DISCOURSE_ROOT=/var/www/discourse
@@ -33,7 +33,7 @@ RUN gem install foreman
 COPY install-nginx.sh /tmp/install-nginx.sh
 RUN /tmp/install-nginx.sh && \
     cp config/nginx.sample.conf /etc/nginx/conf.d/discourse.conf && \
-    sed -i "s/^  server_name enter\.your\.web\.hostname\.here;/  server_name $DISCOURSE_HOSTNAME;/" /etc/nginx/conf.d/discourse.conf && \
+    sed -i 's/^  server_name enter\.your\.web\.hostname\.here;/  server_name $DISCOURSE_HOSTNAME;/' /etc/nginx/conf.d/discourse.conf && \
     mkdir -p /var/nginx/cache/
 
 # Install Redis
